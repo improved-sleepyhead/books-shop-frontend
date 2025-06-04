@@ -9,8 +9,8 @@ import { Toaster } from 'sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-	title: 'Projetto',
-	description: 'The project tracking app',
+	title: 'Bookly',
+	description: 'E-commerce books store',
 	icons: {
 		icon: [
 			{
@@ -36,7 +36,6 @@ export default function RootLayout({
 			>
 				<TanstackQueryProvider>
 					<Toaster position="bottom-center" />
-
 					{children}
 				</TanstackQueryProvider>
 			</body>
