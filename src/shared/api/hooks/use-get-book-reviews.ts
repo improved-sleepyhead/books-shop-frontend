@@ -1,13 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 import { reviewService } from '@/shared/api/services/review.service';
+import { IReview } from '@/shared/api/types/review.types';
 
 export const useGetReviewsByBookId = (bookId: string) => {
-  return useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery<IReview[]>({
     queryKey: ['reviews', 'book', bookId],
-    queryFn: () => reviewService.getReviewsByBookId(bookId),
-    enabled: !!bookId,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    queryFn: () => {
+      if (!bookId) {
+        throw new Error('Book ID is required');
+      }
+      return reviewService.getReviewsByBookId(bookId);
+    }
   });
+
+  return {
+    reviews: data,
+    isLoading,
+    isError,
+  };
 };

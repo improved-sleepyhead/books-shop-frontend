@@ -9,17 +9,33 @@ type UseGetAllUsersParams = {
 export const useGetAllUsers = (params: UseGetAllUsersParams = {}) => {
   const limit = params.limit ?? 10;
 
-  return useInfiniteQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['users', params],
     queryFn: async ({ pageParam = 1 }) => {
       return await userService.getAllUsers(pageParam, limit);
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < limit ? undefined : allPages.length + 1;
+    getNextPageParam: (lastPage) => {
+      return lastPage.length < limit ? undefined : undefined;
     },
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
+
+  return {
+    usersData: data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  };
 };

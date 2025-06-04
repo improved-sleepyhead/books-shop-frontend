@@ -10,7 +10,14 @@ type BookFilters = {
 export const useGetAllBooks = (initialFilters: BookFilters = {}) => {
   const limit = initialFilters.limit ?? 10;
 
-  return useInfiniteQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['books', initialFilters],
     queryFn: async ({ pageParam = 1 }) => {
       const filters = {
@@ -22,11 +29,20 @@ export const useGetAllBooks = (initialFilters: BookFilters = {}) => {
       return await bookService.getAllBooks(filters);
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < limit ? undefined : allPages.length + 1;
+    getNextPageParam: (lastPage) => {
+      return lastPage.length < limit ? undefined : undefined; // можно убрать, если не нужно вычислять дальше
     },
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
+
+  return {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  };
 };

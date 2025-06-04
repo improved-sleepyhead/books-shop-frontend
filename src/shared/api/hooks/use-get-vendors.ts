@@ -1,12 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { vendorService } from '@/shared/api/services/vendor.service';
+import { IVendor } from '@/shared/api/types/vendor.types';
 
 export const useGetAllVendors = () => {
-  return useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery<IVendor[]>({
     queryKey: ['vendors'],
     queryFn: () => vendorService.getAllVendors(),
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
+
+  return {
+    vendors: data,
+    isLoading,
+    isError,
+  };
 };
