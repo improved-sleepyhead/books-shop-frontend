@@ -1,5 +1,5 @@
 import { axiosWithAuth } from '@/shared/api/interceptors/interceptors';
-import { CreateVendorDto, IVendor, UpdateVendorDto } from '../types/vendor.types';
+import { CreateVendorDto, IVendor, UpdateVendorDto } from '@/shared/api/types/vendor.types';
 
 class VendorService {
   private BASE_URL = '/vendors';

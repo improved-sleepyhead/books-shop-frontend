@@ -1,5 +1,5 @@
 import { axiosWithAuth } from '@/shared/api/interceptors/interceptors';
-import { CreateUserDto, IUser, IUserProfile, UpdateUserDto } from '../types/user.types';
+import { CreateUserDto, IUser, IUserProfile, UpdateUserDto } from '@/shared/api/types/user.types';
 
 class UserService {
   private BASE_URL = '/users';
