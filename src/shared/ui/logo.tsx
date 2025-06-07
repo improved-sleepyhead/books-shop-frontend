@@ -5,5 +5,5 @@ export const Logo = () => {
 		<div className="">
 			<Image src="/logo.svg" height={56} width={152} alt="Logo" />
 		</div>
-	)
-}
+	);
+};
