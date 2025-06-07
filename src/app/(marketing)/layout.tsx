@@ -1,5 +1,5 @@
-import { Footer } from "@/widgets/marketing/footer";
-import { Header } from "@/widgets/marketing/header";
+import { Footer } from "@/widgets/marketing/components/footer";
+import { Header } from "@/widgets/marketing/components/header";
 
 interface MainLayoutProps {
     children: React.ReactNode;
