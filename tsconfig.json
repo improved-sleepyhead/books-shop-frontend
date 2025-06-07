@@ -18,8 +18,17 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+       "@/*": ["./src/*"],
+      "@api/*": ["src/shared/api/*"],
+      "@app/*": ["src/app/*"],
+      "@hooks/*": ["./hooks*"],
+      "@services/*": ["src/shared/api/errors/services/*"],
+      "@providers/*": ["src/providers/*"],
+      "@schemas/*": ["src/schemas/*"],
+      "@features/*": ["src/features/*"], 
+      "@types/*": ["src/shared/api/errors/types/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
