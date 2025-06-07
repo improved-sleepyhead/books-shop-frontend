@@ -1,5 +1,6 @@
 import { Button } from "@/shared/ui/kit/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export const Text = () => {
     return (
@@ -11,8 +12,10 @@ export const Text = () => {
                 <p className="font-bold text-lg md:text-xl lg:text-2xl md:w-2/3 lg:w-1/3 text-center">
                     Выберите книгу, оформите заказ и погрузитесь в историю за считанные минуты!
                 </p>
-                <Button className="h-9 lg:h-10 w-32">
-                    В каталог <ArrowRight />
+                <Button className="h-9 lg:h-10 w-32" asChild>
+                    <Link href="/main">
+                        В каталог <ArrowRight />
+                    </Link>
                 </Button>
             </div>
         </div>
