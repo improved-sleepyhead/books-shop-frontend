@@ -11,7 +11,7 @@ export const Header = ({user} : HeaderProps) => {
     return (
         <div className="flex items-center w-full h-16 justify-between pt-8 px-9">
             <Logo />
-                {user ? (
+                {user?.id ? (
                     <Button size="lg" className="hidden md:block">
                         <Link href="/main">
                             Перейти в магазин

@@ -11,6 +11,7 @@ const MainLayout = async ({ children }: MainLayoutProps) => {
     const cookieStore = await cookies()
     const token = cookieStore.get("accessToken")?.value
     const user = token ? parseJwt(token) : null
+    
     return (
         <main className="flex flex-col items-center min-h-screen w-full relative">
             <Header user={user}/>
