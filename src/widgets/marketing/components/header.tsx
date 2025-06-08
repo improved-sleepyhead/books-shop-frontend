@@ -9,7 +9,7 @@ export interface HeaderProps {
 
 export const Header = ({user} : HeaderProps) => {
     return (
-        <div className="flex items-center w-full h-16 justify-between p-5">
+        <div className="flex items-center w-full h-16 justify-between pt-8 px-9">
             <Logo />
                 {user ? (
                     <Button size="lg" className="hidden md:block">

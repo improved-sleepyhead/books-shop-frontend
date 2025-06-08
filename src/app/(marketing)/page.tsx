@@ -1,5 +1,5 @@
 import { Doodles } from "@/widgets/marketing/components/doodles";
-import { Text } from "@/widgets/marketing/components/text";
+import { Text } from "@/widgets/marketing/components/leading";
 
 const HomePage = () => {
   return (
