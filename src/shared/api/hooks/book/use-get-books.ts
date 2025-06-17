@@ -3,7 +3,14 @@ import { bookService } from '@/shared/api/services/book.service';
 
 type BookFilters = {
   search?: string;
-  vendorId?: string;
+  title?: string;
+  author?: string;
+  isbn?: string;
+  digital?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  userId?: string;
+  isFavorite?: boolean;
   limit?: number;
 };
 
@@ -29,20 +36,25 @@ export const useGetAllBooks = (initialFilters: BookFilters = {}) => {
       return await bookService.getAllBooks(filters);
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      return lastPage.length < limit ? undefined : undefined; // можно убрать, если не нужно вычислять дальше
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < limit) return undefined;
+      
+      return allPages.length + 1;
     },
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
 
+  const allBooks = data?.pages.flat() || [];
+
   return {
-    data,
+    data: allBooks,
     isLoading,
     isError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    totalCount: allBooks.length,
   };
 };

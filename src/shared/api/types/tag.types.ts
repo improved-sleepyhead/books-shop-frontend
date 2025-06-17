@@ -1,10 +1,11 @@
-export type ITag = {
+export interface ITag {
   id: string;
   name: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-};
+  slug: string;
+}
 
-export type CreateTagDto = {
+export interface CreateTagDto {
   name: string;
-};
+}
+
+export interface UpdateTagDto extends Partial<CreateTagDto> {}

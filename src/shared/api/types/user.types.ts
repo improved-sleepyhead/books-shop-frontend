@@ -1,7 +1,6 @@
 export enum UserRole {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-  VENDOR = 'VENDOR',
+  CUSTOMER = 'CUSTOMER',
+  ADMIN = 'ADMIN'
 }
 
 export interface IUser {
@@ -9,19 +8,16 @@ export interface IUser {
   email: string;
   name: string;
   role: UserRole;
-  createdAt: string | Date;
-  updatedAt: string | Date;
+  avatarUrl?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUserProfile {
-  totalBooks: number;
   totalReviews: number;
   totalOrders: number;
-  vendorProfile?: {
-    displayName: string;
-    subdomain: string;
-    totalBooks: number;
-  };
+  wishlistItemsCount?: number;
+  avatarUrl?: string | null;
 }
 
 export interface CreateUserDto {
@@ -36,4 +32,10 @@ export type UpdateUserDto = Partial<{
   password: string;
   name: string;
   role: UserRole;
+}>;
+
+export type UpdateProfileDto = Partial<{
+  email: string;
+  name: string;
+  avatarUrl?: string;
 }>;

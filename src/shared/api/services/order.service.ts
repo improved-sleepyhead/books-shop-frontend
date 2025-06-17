@@ -1,6 +1,5 @@
 import { axiosWithAuth } from '@/shared/api/interceptors/interceptors';
-import { CreateOrderDto, IOrder } from '@/shared/api/types/order.types';
-
+import { CreateOrderDto, IOrder, PaginationParams } from '@/shared/api/types/order.types';
 
 class OrderService {
   private BASE_URL = '/orders';
@@ -15,8 +14,10 @@ class OrderService {
     return response.data;
   }
 
-  async getOrdersByUser(): Promise<IOrder[]> {
-    const response = await axiosWithAuth.get<IOrder[]>(this.BASE_URL);
+  async getOrdersByUser(userId: string, pagination?: PaginationParams): Promise<IOrder[]> {
+    const response = await axiosWithAuth.get<IOrder[]>(this.BASE_URL, {
+      params: { ...pagination, userId }
+    });
     return response.data;
   }
 

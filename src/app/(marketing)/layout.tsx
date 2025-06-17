@@ -3,11 +3,11 @@ import { Footer } from "@/widgets/marketing/components/footer";
 import { Header } from "@/widgets/marketing/components/header";
 import { cookies } from "next/headers";
 
-interface MainLayoutProps {
+interface MarketingLayoutProps {
     children: React.ReactNode;
 };
 
-const MainLayout = async ({ children }: MainLayoutProps) => {
+const MarketingLayout = async ({ children }: MarketingLayoutProps) => {
     const cookieStore = await cookies()
     const token = cookieStore.get("accessToken")?.value
     const user = token ? parseJwt(token) : null
@@ -23,4 +23,4 @@ const MainLayout = async ({ children }: MainLayoutProps) => {
     );
 };
  
-export default MainLayout;
+export default MarketingLayout;

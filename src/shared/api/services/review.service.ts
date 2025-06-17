@@ -3,6 +3,7 @@ import {
   IReview,
   CreateReviewDto,
   UpdateReviewDto,
+  PaginationParams,
 } from '@/shared/api/types/review.types';
 
 class ReviewService {
@@ -18,13 +19,17 @@ class ReviewService {
     return response.data;
   }
 
-  async getMyReviews(): Promise<IReview[]> {
-    const response = await axiosWithAuth.get<IReview[]>(`${this.BASE_URL}/user/me`);
+  async getMyReviews(pagination?: PaginationParams): Promise<IReview[]> {
+    const response = await axiosWithAuth.get<IReview[]>(`${this.BASE_URL}/user/me`, {
+      params: { ...pagination }
+    });
     return response.data;
   }
 
-  async getReviewsByBookId(bookId: string): Promise<IReview[]> {
-    const response = await axiosWithAuth.get<IReview[]>(`${this.BASE_URL}/book/${bookId}`);
+  async getReviewsByBookId(bookId: string, pagination?: PaginationParams): Promise<IReview[]> {
+    const response = await axiosWithAuth.get<IReview[]>(`${this.BASE_URL}/book/${bookId}`, {
+        params: { ...pagination }
+      });
     return response.data;
   }
 
@@ -33,8 +38,9 @@ class ReviewService {
     return response.data;
   }
 
-  async deleteReview(id: string): Promise<void> {
-    await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
+  async deleteReview(id: string): Promise<IReview> {
+    const response = await axiosWithAuth.delete<IReview>(`${this.BASE_URL}/${id}`);
+    return response.data;
   }
 }
 

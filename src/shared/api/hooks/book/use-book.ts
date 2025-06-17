@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { bookService } from '@/shared/api/services/book.service';
-import { IBook } from '@/shared/api/types/book.types';
+import { IBook, BookQueryDto, RemoveImageDto } from '@/shared/api/types/book.types';
 import { toast } from 'sonner';
 
 type UseBookParams = {
@@ -21,20 +21,17 @@ export function useBook({ id }: UseBookParams = {}) {
       return bookService.getBookById(id);
     },
     enabled: !!id,
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
 
   const { mutate: createBook, isPending: isCreating } = useMutation({
-    mutationFn: (dto: Parameters<typeof bookService.createBook>[0]) =>
-      bookService.createBook(dto),
+    mutationFn: bookService.createBook,
     onSuccess: (newBook) => {
       toast.success('Книга успешно создана');
       queryClient.invalidateQueries({ queryKey: ['books'] });
-      if (newBook.id) {
-        queryClient.invalidateQueries({ queryKey: ['book', newBook.id] });
-      }
+      queryClient.setQueryData(['book', newBook.id], newBook);
     },
     onError: () => {
       toast.error('Ошибка при создании книги');
@@ -44,9 +41,9 @@ export function useBook({ id }: UseBookParams = {}) {
   const { mutate: updateBook, isPending: isUpdating } = useMutation({
     mutationFn: ({ id, dto }: { id: string; dto: Parameters<typeof bookService.updateBook>[1] }) =>
       bookService.updateBook(id, dto),
-    onSuccess: (_, variables) => {
+    onSuccess: (updatedBook) => {
       toast.success('Книга успешно обновлена');
-      queryClient.invalidateQueries({ queryKey: ['book', variables.id] });
+      queryClient.setQueryData(['book', updatedBook.id], updatedBook);
       queryClient.invalidateQueries({ queryKey: ['books'] });
     },
     onError: () => {
@@ -55,15 +52,56 @@ export function useBook({ id }: UseBookParams = {}) {
   });
 
   const { mutate: deleteBook, isPending: isDeleting } = useMutation({
-    mutationFn: (id: string) => bookService.deleteBook(id),
-    onSuccess: () => {
+    mutationFn: bookService.deleteBook,
+    onSuccess: (_, id) => {
       toast.success('Книга успешно удалена');
+      queryClient.removeQueries({ queryKey: ['book', id] });
       queryClient.invalidateQueries({ queryKey: ['books'] });
     },
     onError: () => {
       toast.error('Ошибка при удалении книги');
     },
   });
+
+  const { mutate: removeBookImage } = useMutation({
+    mutationFn: ({ id, dto }: { id: string; dto: RemoveImageDto }) =>
+      bookService.removeBookImage(id, dto),
+    onSuccess: (updatedBook) => {
+      queryClient.setQueryData(['book', updatedBook.id], updatedBook);
+    },
+    onError: () => {
+      toast.error('Ошибка при удалении изображения');
+    },
+  });
+
+  const { mutate: toggleFavorite } = useMutation({
+    mutationFn: ({ bookId, userId }: { bookId: string; userId: string }) =>
+      bookService.toggleFavorite(bookId, userId),
+    onSuccess: (updatedBook) => {
+      queryClient.setQueryData(['book', updatedBook.id], updatedBook);
+      queryClient.invalidateQueries({ queryKey: ['favorite-books'] });
+    },
+  });
+
+  const useBooksQuery = (query: BookQueryDto = {}) => {
+    return useInfiniteQuery({
+      queryKey: ['books', query],
+      queryFn: ({ pageParam = 1 }) => 
+        bookService.getAllBooks({ ...query, page: pageParam }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage, allPages) => 
+        lastPage.length === (query.limit || 10) ? allPages.length + 1 : undefined,
+      staleTime: 5 * 60 * 1000,
+    });
+  };
+
+  const useFavoriteBooks = (userId: string, query: Omit<BookQueryDto, 'userId' | 'isFavorite'> = {}) => {
+    return useQuery<IBook[]>({
+      queryKey: ['favorite-books', userId, query],
+      queryFn: () => bookService.getFavorites(userId, query),
+      staleTime: 5 * 60 * 1000,
+    });
+  };
 
   return {
     book,
@@ -72,11 +110,16 @@ export function useBook({ id }: UseBookParams = {}) {
 
     createBook,
     isCreating,
-
     updateBook,
     isUpdating,
-
     deleteBook,
     isDeleting,
+
+    removeBookImage,
+
+    toggleFavorite,
+
+    useBooksQuery,
+    useFavoriteBooks,
   };
 }

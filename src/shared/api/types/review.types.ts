@@ -3,18 +3,22 @@ export type IReview = {
   userId: string;
   bookId: string;
   rating: number;
-  comment: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
+  comment: string | null;
+  createdAt: Date;
 };
 
 export type CreateReviewDto = {
   bookId: string;
   rating: number;
-  comment: string;
+  comment?: string;
 };
 
-export type UpdateReviewDto = Partial<{
-  rating: number;
-  comment: string;
-}>;
+export type UpdateReviewDto = {
+  rating?: number;
+  comment?: string;
+};
+
+export type PaginationParams = {
+  skip?: number;
+  limit?: number;
+};
