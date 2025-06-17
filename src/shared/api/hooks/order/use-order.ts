@@ -21,7 +21,7 @@ export function useOrder({ id }: UseOrderParams = {}) {
       return orderService.getOrderById(id);
     },
     enabled: !!id,
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
@@ -32,21 +32,32 @@ export function useOrder({ id }: UseOrderParams = {}) {
     onSuccess: (newOrder) => {
       toast.success('Заказ успешно создан');
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      if (newOrder.id) {
-        queryClient.invalidateQueries({ queryKey: ['order', newOrder.id] });
-      }
+      queryClient.setQueryData(['order', newOrder.id], newOrder);
     },
     onError: () => {
       toast.error('Ошибка при создании заказа');
     },
   });
 
+  const { mutate: updateOrderStatus, isPending: isUpdatingStatus } = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      orderService.updateOrderStatus(id, status),
+    onSuccess: (updatedOrder) => {
+      toast.success('Статус заказа успешно изменён');
+      queryClient.setQueryData(['order', updatedOrder.id], updatedOrder);
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+    onError: () => {
+      toast.error('Ошибка при изменении статуса заказа');
+    },
+  });
+
   const { mutate: deleteOrder, isPending: isDeleting } = useMutation({
     mutationFn: (id: string) => orderService.deleteOrder(id),
-    onSuccess: (deletedId) => {
+    onSuccess: (_, deletedId) => {
       toast.success('Заказ успешно удалён');
+      queryClient.removeQueries({ queryKey: ['order', deletedId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      queryClient.invalidateQueries({ queryKey: ['order', deletedId] });
     },
     onError: () => {
       toast.error('Ошибка при удалении заказа');
@@ -60,6 +71,9 @@ export function useOrder({ id }: UseOrderParams = {}) {
 
     createOrder,
     isCreating,
+
+    updateOrderStatus,
+    isUpdatingStatus,
 
     deleteOrder,
     isDeleting,

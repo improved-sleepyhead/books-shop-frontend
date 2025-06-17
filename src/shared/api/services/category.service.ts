@@ -1,6 +1,5 @@
 import { axiosWithAuth } from '@/shared/api/interceptors/interceptors';
-import { CreateCategoryDto, ICategory } from '@/shared/api/types/category.types';
-
+import { CreateCategoryDto, ICategory, UpdateCategoryDto } from '@/shared/api/types/category.types';
 
 class CategoryService {
   private BASE_URL = '/categories';
@@ -20,13 +19,14 @@ class CategoryService {
     return response.data;
   }
 
-  async updateCategory(id: string, dto: CreateCategoryDto): Promise<ICategory> {
+  async updateCategory(id: string, dto: UpdateCategoryDto): Promise<ICategory> {
     const response = await axiosWithAuth.patch<ICategory>(`${this.BASE_URL}/${id}`, dto);
     return response.data;
   }
 
-  async deleteCategory(id: string): Promise<void> {
-    await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
+  async deleteCategory(id: string): Promise<ICategory> {
+    const response = await axiosWithAuth.delete<ICategory>(`${this.BASE_URL}/${id}`);
+    return response.data;
   }
 }
 

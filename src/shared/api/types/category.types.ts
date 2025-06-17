@@ -1,12 +1,13 @@
-export type ICategory = {
+export interface ICategory {
   id: string;
   name: string;
-  description?: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-};
+  slug: string;
+  imageUrl: string | null;
+}
 
-export type CreateCategoryDto = {
+export interface CreateCategoryDto {
   name: string;
-  description?: string;
-};
+  imageUrl?: string;
+}
+
+export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {}

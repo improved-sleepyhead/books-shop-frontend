@@ -1,25 +1,53 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { reviewService } from '@/shared/api/services/review.service';
-import { IReview } from '@/shared/api/types/review.types';
+import { IReview, PaginationParams } from '@/shared/api/types/review.types';
 
-export const useGetReviewsByBookId = (bookId: string) => {
+type ReviewFilters = {
+  bookId: string;
+  limit?: number;
+};
+
+export const useBookReviews = (initialFilters: ReviewFilters) => {
+  const limit = initialFilters.limit ?? 10;
+
   const {
     data,
     isLoading,
     isError,
-  } = useQuery<IReview[]>({
-    queryKey: ['reviews', 'book', bookId],
-    queryFn: () => {
-      if (!bookId) {
-        throw new Error('Book ID is required');
-      }
-      return reviewService.getReviewsByBookId(bookId);
-    }
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['reviewsByBook', initialFilters],
+    queryFn: async ({ pageParam = 1 }) => {
+      const filters = {
+        ...initialFilters,
+        page: pageParam,
+        limit,
+      };
+
+      return await reviewService.getReviewsByBookId(initialFilters.bookId, filters);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < limit) return undefined;
+      return allPages.length + 1;
+    },
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: !!initialFilters.bookId,
   });
 
+  const reviews = data?.pages.flat() || [];
+
   return {
-    reviews: data,
+    data: reviews,
     isLoading,
     isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    totalCount: reviews.length,
   };
 };

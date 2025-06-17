@@ -1,5 +1,5 @@
 import { axiosWithAuth } from '@/shared/api/interceptors/interceptors';
-import { CreateUserDto, IUser, IUserProfile, UpdateUserDto } from '@/shared/api/types/user.types';
+import { CreateUserDto, IUser, IUserProfile, UpdateProfileDto, UpdateUserDto } from '@/shared/api/types/user.types';
 
 class UserService {
   private BASE_URL = '/users';
@@ -11,6 +11,21 @@ class UserService {
 
   async getCurrentUserProfile(): Promise<IUserProfile> {
     const response = await axiosWithAuth.get<IUserProfile>(`${this.BASE_URL}/me/profile`);
+    return response.data;
+  }
+
+  async updateCurrentUserProfile(data: UpdateProfileDto, avatarFile?: File): Promise<IUser> {
+    const formData = new FormData();
+    if (data.email) formData.append('email', data.email);
+    if (data.name) formData.append('name', data.name);
+    if (avatarFile) formData.append('avatar', avatarFile);
+    
+    const response = await axiosWithAuth.patch<IUser>(`${this.BASE_URL}/me/profile`, formData);
+    return response.data;
+  }
+
+  async getUserProfile(id: string): Promise<IUserProfile> {
+    const response = await axiosWithAuth.get<IUserProfile>(`${this.BASE_URL}/${id}/profile`);
     return response.data;
   }
 

@@ -1,13 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { userService } from '@/shared/api/services/user.service';
 
-type UseGetAllUsersParams = {
+type UserFilters = {
   limit?: number;
-  [key: string]: any;
 };
 
-export const useGetAllUsers = (params: UseGetAllUsersParams = {}) => {
-  const limit = params.limit ?? 10;
+export const useGetAllUsers = (initialFilters: UserFilters = {}) => {
+  const limit = initialFilters.limit ?? 10;
 
   const {
     data,
@@ -17,25 +16,29 @@ export const useGetAllUsers = (params: UseGetAllUsersParams = {}) => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['users', params],
+    queryKey: ['users', initialFilters],
     queryFn: async ({ pageParam = 1 }) => {
       return await userService.getAllUsers(pageParam, limit);
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      return lastPage.length < limit ? undefined : undefined;
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < limit) return undefined;
+      return allPages.length + 1;
     },
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
 
+  const allUsers = data?.pages.flat() || [];
+
   return {
-    usersData: data,
+    users: allUsers,
     isLoading,
     isError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    totalCount: allUsers.length,
   };
 };

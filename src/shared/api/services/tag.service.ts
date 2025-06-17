@@ -1,8 +1,5 @@
 import { axiosWithAuth } from '@/shared/api/interceptors/interceptors';
-import {
-  CreateTagDto,
-  ITag,
-} from '@/shared/api/types/tag.types';
+import { CreateTagDto, ITag, UpdateTagDto } from '@/shared/api/types/tag.types';
 
 class TagService {
   private BASE_URL = '/tags';
@@ -22,13 +19,14 @@ class TagService {
     return response.data;
   }
 
-  async updateTag(id: string, dto: CreateTagDto): Promise<ITag> {
+  async updateTag(id: string, dto: UpdateTagDto): Promise<ITag> {
     const response = await axiosWithAuth.patch<ITag>(`${this.BASE_URL}/${id}`, dto);
     return response.data;
   }
 
-  async deleteTag(id: string): Promise<void> {
-    await axiosWithAuth.delete(`${this.BASE_URL}/${id}`);
+  async deleteTag(id: string): Promise<ITag> {
+    const response = await axiosWithAuth.delete<ITag>(`${this.BASE_URL}/${id}`);
+    return response.data;
   }
 }
 

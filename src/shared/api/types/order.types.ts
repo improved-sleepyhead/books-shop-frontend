@@ -1,14 +1,31 @@
-export type IOrder = {
-  id: string;
-  userId: string;
-  bookId: string;
-  status: string;
-  totalPrice: number;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-};
+export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
-export type CreateOrderDto = {
+export interface IOrderItem {
   bookId: string;
-  quantity?: number;
-};
+  quantity: number;
+  price: number;
+}
+
+export interface IOrder {
+  id: string;
+  customerId: string;
+  status: OrderStatus;
+  items: IOrderItem[];
+  stripePaymentId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  get totalPrice(): number
+}
+
+export interface CreateOrderDto {
+  items: {
+    bookId: string;
+    quantity: number;
+    price: number;
+  }[];
+}
+
+export interface PaginationParams {
+  skip?: number;
+  limit?: number;
+}
